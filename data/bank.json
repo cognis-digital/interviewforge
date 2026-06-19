@@ -1,0 +1,200 @@
+{
+  "questions": [
+    {
+      "id": "network-001",
+      "topic": "network",
+      "difficulty": "easy",
+      "question": "What is the practical difference between TCP and UDP, and when would you choose UDP for a service?",
+      "answer": "TCP is connection-oriented: it establishes a session via the three-way handshake, guarantees ordered, reliable delivery, and applies flow and congestion control. UDP is connectionless and fire-and-forget: no handshake, no ordering or retransmission, lower overhead and latency. Choose UDP when timeliness beats completeness and the application can tolerate or handle loss itself, e.g. DNS queries, real-time voice/video, gaming, and telemetry. Many newer protocols (like QUIC) build their own reliability on top of UDP to avoid TCP's head-of-line blocking."
+    },
+    {
+      "id": "network-002",
+      "topic": "network",
+      "difficulty": "medium",
+      "question": "Explain how a TLS handshake establishes a secure channel and what each side proves.",
+      "answer": "In a modern (TLS 1.3) handshake the client sends a ClientHello with supported cipher suites and an ephemeral key share. The server responds with its chosen suite, its own key share, and a certificate chain. Both sides derive a shared secret via ephemeral Diffie-Hellman, giving forward secrecy. The client verifies the server certificate against trusted CAs and checks the name and validity, proving the server's identity. The server proves possession of the private key by signing the handshake transcript. Optionally the client presents its own certificate for mutual TLS. After key derivation, application data is encrypted and integrity-protected with an AEAD cipher."
+    },
+    {
+      "id": "network-003",
+      "topic": "network",
+      "difficulty": "medium",
+      "question": "What is ARP spoofing and how can a network defend against it?",
+      "answer": "ARP has no authentication, so any host can claim ownership of an IP by broadcasting a forged ARP reply mapping that IP to its own MAC. An attacker on the same broadcast domain uses this to redirect traffic through their machine for interception or modification (a man-in-the-middle). Defenses include dynamic ARP inspection on managed switches (validating ARP against DHCP snooping bindings), static ARP entries for critical hosts, port security limiting MAC addresses per port, and segmenting the network so fewer hosts share a broadcast domain. End-to-end encryption limits the value of any intercepted traffic."
+    },
+    {
+      "id": "network-004",
+      "topic": "network",
+      "difficulty": "hard",
+      "question": "Why does DNS rebinding bypass the same-origin policy, and how do you mitigate it?",
+      "answer": "DNS rebinding abuses the fact that the same-origin policy keys on hostname, not IP. An attacker controls a domain with a very short TTL. The victim's browser first resolves it to the attacker's server and loads malicious JavaScript; the attacker then re-points the domain to an internal IP (like 192.168.x.x or 127.0.0.1). The script, still on the 'same origin' by name, now talks to the internal service. Mitigations include validating the Host header on internal services, rejecting requests for unexpected hostnames, DNS resolvers that filter private IPs in external responses (RFC 1918 filtering / 'DNS rebinding protection'), and binding services to localhost with origin checks rather than trusting network position."
+    },
+    {
+      "id": "web-001",
+      "topic": "web",
+      "difficulty": "easy",
+      "question": "What is the difference between stored, reflected, and DOM-based XSS?",
+      "answer": "All three execute attacker-controlled script in a victim's browser context. Stored (persistent) XSS saves the payload on the server (e.g. in a comment or profile) so it runs for every viewer. Reflected XSS bounces the payload off the server in the immediate response, typically delivered via a crafted link, affecting only the user who follows it. DOM-based XSS never involves the server reflecting the payload; the vulnerability is entirely in client-side JavaScript that reads attacker-influenced input (such as location.hash) and writes it to a sink like innerHTML. The fix in all cases is context-aware output encoding plus input validation, and DOM XSS additionally requires using safe DOM APIs."
+    },
+    {
+      "id": "web-002",
+      "topic": "web",
+      "difficulty": "medium",
+      "question": "How do CSRF attacks work, and why do SameSite cookies and anti-CSRF tokens defend against them?",
+      "answer": "CSRF tricks an authenticated user's browser into sending a state-changing request to a site where they are logged in, relying on the browser automatically attaching the session cookie. The attacker hosts a form or image that targets the victim site; the user's ambient credentials make the request look legitimate. Anti-CSRF tokens defend by requiring a secret, per-session (or per-request) value that the attacker's cross-site page cannot read or guess, so forged requests lack it. SameSite cookies (Lax or Strict) tell the browser not to send the cookie on cross-site requests, removing the ambient authority the attack depends on. The two controls are complementary."
+    },
+    {
+      "id": "web-003",
+      "topic": "web",
+      "difficulty": "medium",
+      "question": "What is SQL injection and why are parameterized queries the correct fix rather than escaping?",
+      "answer": "SQL injection occurs when untrusted input is concatenated into a query string, letting an attacker alter the query's structure to read, modify, or destroy data, or bypass authentication. Manual escaping is fragile: it depends on getting every character class and encoding right for the specific database, and one missed path reintroduces the flaw. Parameterized queries (prepared statements) send the query template and the data separately, so the database treats input strictly as values, never as executable SQL. Structure and data can no longer be confused regardless of input content. Use parameterization everywhere, with allow-list validation and least-privilege database accounts as defense in depth."
+    },
+    {
+      "id": "web-004",
+      "topic": "web",
+      "difficulty": "hard",
+      "question": "Explain SSRF, why cloud metadata endpoints make it dangerous, and how to mitigate it.",
+      "answer": "Server-Side Request Forgery makes a vulnerable server issue HTTP requests to an attacker-chosen target, abusing the server's network position. In cloud environments this is severe because the instance metadata service (e.g. a link-local 169.254.169.254 address) returns credentials and configuration to anything that can reach it from the instance. An attacker who coerces the server into fetching that URL can steal temporary IAM credentials. Mitigations: validate and allow-list outbound destinations, resolve and re-check hostnames to block private and link-local ranges (defeating DNS rebinding to metadata), require IMDSv2-style session tokens, disable metadata access where unneeded, and run egress firewalls that deny the metadata IP from application workloads."
+    },
+    {
+      "id": "web-005",
+      "topic": "web",
+      "difficulty": "easy",
+      "question": "What does the Content-Security-Policy header do and what attack class does it most reduce?",
+      "answer": "CSP is a response header (or meta tag) that tells the browser which sources of script, style, images, frames, and connections are allowed for a page. By restricting script-src to known origins or nonces/hashes and forbidding inline script, it sharply reduces the impact of cross-site scripting: even if an injection point exists, the injected script is blocked from executing or exfiltrating. CSP also supports reporting so violations can be monitored. It is a strong defense-in-depth layer but not a substitute for proper output encoding; a strict, nonce-based policy is far more effective than an allow-list full of broad host wildcards."
+    },
+    {
+      "id": "ir-001",
+      "topic": "ir",
+      "difficulty": "easy",
+      "question": "Name the phases of a typical incident response lifecycle and the goal of each.",
+      "answer": "A common lifecycle has six phases. Preparation: build tooling, runbooks, logging, and training before anything happens. Identification (detection and analysis): determine that an incident is occurring and its scope. Containment: limit spread and damage, often in short-term and long-term steps. Eradication: remove the root cause, such as malware, backdoors, or vulnerable configurations. Recovery: restore systems to normal operation and monitor for recurrence. Lessons learned (post-incident): document what happened, what worked, and what to improve. The goal across all phases is to minimize impact and shorten the time from detection to full recovery while preserving evidence."
+    },
+    {
+      "id": "ir-002",
+      "topic": "ir",
+      "difficulty": "medium",
+      "question": "When responding to a compromised server, why might you image memory before pulling the network cable or powering off?",
+      "answer": "Volatile data lives only in RAM: running processes, injected code, decryption keys, open network connections, and fileless malware that never touches disk. Powering off destroys all of it, and even pulling the network can cause malware to wipe or trigger anti-forensics. Capturing a memory image first preserves this evidence and may reveal the attacker's tooling and live sessions. The trade-off is containment urgency: if active data exfiltration or destruction is ongoing, fast isolation may outweigh forensic completeness. The right call follows order-of-volatility principles and the organization's documented priorities, balancing evidence preservation against stopping ongoing harm."
+    },
+    {
+      "id": "ir-003",
+      "topic": "ir",
+      "difficulty": "medium",
+      "question": "What is the difference between an indicator of compromise (IOC) and a tactic, technique, or procedure (TTP), and why do TTPs matter more for detection durability?",
+      "answer": "An IOC is a concrete artifact tied to a specific intrusion: a file hash, a malicious IP or domain, a registry key. TTPs describe attacker behavior at a higher level: how they gain access, move laterally, or persist, often mapped to a framework like MITRE ATT&CK. IOCs are cheap to detect but brittle, because attackers rotate infrastructure and recompile payloads, so an IOC may be stale within hours. Detections built on TTPs target the underlying behavior, which is costlier for adversaries to change, so they catch variants and future campaigns. Mature detection programs use IOCs for fast wins but invest in behavior-based analytics for lasting coverage."
+    },
+    {
+      "id": "crypto-001",
+      "topic": "crypto",
+      "difficulty": "easy",
+      "question": "What is the difference between symmetric and asymmetric encryption, and how are they combined in practice?",
+      "answer": "Symmetric encryption uses one shared secret key for both encryption and decryption (e.g. AES); it is fast and suited to bulk data but requires securely sharing the key. Asymmetric encryption uses a mathematically linked key pair, a public key to encrypt or verify and a private key to decrypt or sign (e.g. RSA, elliptic curve); it solves key distribution but is far slower. In practice systems combine them: asymmetric cryptography (or a Diffie-Hellman key exchange) establishes or transports a fresh symmetric session key, then the fast symmetric cipher protects the actual data. TLS is the canonical example of this hybrid approach."
+    },
+    {
+      "id": "crypto-002",
+      "topic": "crypto",
+      "difficulty": "medium",
+      "question": "Why should passwords be stored with a slow salted hash like bcrypt/scrypt/Argon2 rather than SHA-256?",
+      "answer": "Fast general-purpose hashes like SHA-256 are designed for speed, which is exactly wrong for passwords: an attacker who steals the database can compute billions of guesses per second on GPUs. A per-user random salt prevents precomputed rainbow tables and ensures identical passwords hash differently, but it does not slow each guess. Purpose-built password hashes (bcrypt, scrypt, Argon2) add a tunable work factor and, for scrypt/Argon2, memory hardness, deliberately making each guess expensive and resistant to GPU/ASIC parallelism. As hardware improves you raise the cost parameter. The goal is to make offline cracking of a leaked hash economically infeasible for realistic passwords."
+    },
+    {
+      "id": "crypto-003",
+      "topic": "crypto",
+      "difficulty": "medium",
+      "question": "What does a digital signature provide, and what does it not provide?",
+      "answer": "A digital signature is produced by hashing a message and encrypting that hash with the signer's private key. Verifiers recompute the hash and check it against the signature using the signer's public key. This provides integrity (any change breaks the signature), authentication (only the private-key holder could produce it), and non-repudiation (the signer cannot plausibly deny it, assuming key control). What it does not provide is confidentiality: the message itself is not hidden, so signing and encryption are separate concerns. It also assumes the verifier trusts the binding between the public key and an identity, which is why public key infrastructure or a web of trust is needed."
+    },
+    {
+      "id": "crypto-004",
+      "topic": "crypto",
+      "difficulty": "hard",
+      "question": "What is forward secrecy and why does it matter even if a server's long-term private key is later compromised?",
+      "answer": "Forward secrecy (more precisely, perfect forward secrecy) means that compromise of long-term keys does not allow decryption of past sessions. It is achieved by negotiating a fresh ephemeral key for each session via Diffie-Hellman (ECDHE), where the ephemeral private values are discarded after use. The long-term key only authenticates the exchange; it never directly encrypts session data. So an adversary who records ciphertext today and later steals the server's private key still cannot recover the per-session keys, because those ephemeral secrets no longer exist. This protects against 'harvest now, decrypt later' attacks and limits the blast radius of a key compromise to only sessions where the ephemeral key was also captured."
+    },
+    {
+      "id": "cloud-001",
+      "topic": "cloud",
+      "difficulty": "easy",
+      "question": "Explain the shared responsibility model in cloud security with an example.",
+      "answer": "The shared responsibility model divides security duties between the cloud provider and the customer, and the line shifts by service type. The provider is always responsible for security 'of' the cloud: the physical data centers, hardware, and the virtualization layer. The customer is responsible for security 'in' the cloud: their data, access management, and configuration. For an IaaS virtual machine the customer patches the OS, configures the firewall, and manages the app. For a managed database (PaaS) the provider patches the engine, but the customer still controls access, encryption choices, and data. Misunderstanding this split, for example assuming the provider secures your storage bucket's access policy, is a leading cause of breaches."
+    },
+    {
+      "id": "cloud-002",
+      "topic": "cloud",
+      "difficulty": "medium",
+      "question": "Why are publicly exposed object-storage buckets such a common breach cause, and how do you prevent it organizationally?",
+      "answer": "Object storage is easy to make public with a single setting, defaults and permission models have historically been confusing, and a misconfigured bucket is directly reachable over the internet with no further exploitation needed. Developers also grant broad access for convenience during testing and forget to tighten it. Organizationally you prevent this by enabling account-level 'block public access' guardrails, enforcing encryption and least-privilege bucket policies, using infrastructure-as-code with policy-as-code checks in CI to reject public buckets, continuously scanning with a cloud security posture management tool, and alerting on any bucket that becomes public. Defense in depth means a single human mistake should be caught before or shortly after it reaches production."
+    },
+    {
+      "id": "cloud-003",
+      "topic": "cloud",
+      "difficulty": "medium",
+      "question": "What are the security advantages of short-lived, role-based credentials over long-lived access keys in the cloud?",
+      "answer": "Long-lived access keys are static secrets that, once leaked (in code, logs, or a laptop), grant access until someone notices and rotates them, and they are frequently over-permissioned. Short-lived role-based credentials are issued on demand, scoped to a specific role, and expire automatically in minutes or hours, so a leaked token has a small window of usefulness. Workloads assume roles via the platform's identity service (instance roles, federated identity, OIDC from CI), eliminating stored secrets entirely. This shrinks the attack surface, simplifies rotation, and produces clearer audit trails of who assumed what role and when. The principle is to prefer ephemeral, narrowly scoped identity over durable shared secrets."
+    },
+    {
+      "id": "identity-001",
+      "topic": "identity",
+      "difficulty": "easy",
+      "question": "What is the difference between authentication and authorization?",
+      "answer": "Authentication answers 'who are you?' and verifies an identity, for example by checking a password, a hardware token, or a biometric. Authorization answers 'what are you allowed to do?' and determines whether the authenticated identity may perform a given action on a given resource, for example via roles or policies. They are sequential and distinct: you authenticate first, then enforce authorization on each request. A common security flaw is to authenticate a user correctly but then fail to check authorization properly, leading to broken access control where a logged-in user can reach data or actions that should be off-limits."
+    },
+    {
+      "id": "identity-002",
+      "topic": "identity",
+      "difficulty": "medium",
+      "question": "Why is multi-factor authentication effective, and which factor types resist phishing best?",
+      "answer": "MFA requires evidence from more than one independent category, typically something you know (password), something you have (a device or token), and something you are (biometric). It is effective because stealing a password alone, by far the most common attack, is no longer sufficient. However, factor strength varies. SMS and one-time codes can be phished in real time or intercepted via SIM swapping. The strongest factors are origin-bound public-key authenticators such as FIDO2/WebAuthn security keys and passkeys: they cryptographically bind the login to the legitimate site's origin, so a credential entered on a look-alike phishing domain simply will not work. Phishing-resistant MFA should be the goal for privileged accounts."
+    },
+    {
+      "id": "identity-003",
+      "topic": "identity",
+      "difficulty": "medium",
+      "question": "Explain the principle of least privilege and how it limits the impact of a compromised account.",
+      "answer": "Least privilege means every user, service, and process is granted only the permissions strictly required to perform its function, and nothing more, for only as long as needed. When an account is compromised, the damage is bounded by what that account could legitimately do, so a narrowly scoped identity cannot be pivoted into broad data theft or lateral movement. In practice this means role-based access scoped to job function, just-in-time elevation for administrative tasks, removing standing admin rights, regular access reviews to revoke creep, and separate accounts for privileged versus daily work. It is a foundational control that reduces blast radius across nearly every attack scenario."
+    },
+    {
+      "id": "appsec-001",
+      "topic": "appsec",
+      "difficulty": "easy",
+      "question": "What is the difference between SAST, DAST, and SCA in an application security program?",
+      "answer": "SAST (static application security testing) analyzes source code or bytecode without running it, finding flaws like injection sinks and hardcoded secrets early, but it can be noisy with false positives. DAST (dynamic application security testing) tests a running application from the outside, like an attacker, catching runtime and configuration issues SAST cannot see, but only on code paths it exercises. SCA (software composition analysis) inventories third-party and open-source dependencies and flags known-vulnerable versions and license risks. They are complementary: SAST and SCA shift left into the pipeline, DAST validates the deployed surface, and a mature program runs all three plus manual review."
+    },
+    {
+      "id": "appsec-002",
+      "topic": "appsec",
+      "difficulty": "medium",
+      "question": "What is a software bill of materials (SBOM) and why has it become important for supply-chain security?",
+      "answer": "An SBOM is a formal, machine-readable inventory of all components, libraries, and dependencies that make up a piece of software, including transitive dependencies and their versions. It matters because modern applications are mostly third-party code, and incidents like widely exploited library vulnerabilities showed that organizations often cannot quickly answer 'are we affected?' With an SBOM you can rapidly map a newly disclosed vulnerability to every product and deployment that ships the affected component, prioritize patching, and verify what a vendor actually delivered. It also supports provenance and integrity checks against tampering. Formats like SPDX and CycloneDX standardize SBOMs so they can be consumed by tooling across the supply chain."
+    },
+    {
+      "id": "appsec-003",
+      "topic": "appsec",
+      "difficulty": "medium",
+      "question": "Why is input validation alone insufficient, and what is the role of output encoding and parameterization?",
+      "answer": "Input validation reduces obviously bad data at the boundary, but it cannot anticipate every downstream context, and 'valid' data can still be dangerous depending on where it is used. The same string is harmless as a database value, hazardous when concatenated into SQL, and hazardous again when written into HTML. The durable defenses are context-specific: parameterized queries keep data separate from SQL structure, and output encoding escapes data for the exact sink it lands in (HTML body, attribute, JavaScript, URL). The principle is to neutralize injection at the point of use according to that context, treating input validation as a helpful first filter rather than the primary control."
+    },
+    {
+      "id": "general-001",
+      "topic": "general",
+      "difficulty": "easy",
+      "question": "Explain the CIA triad and give a control that primarily supports each property.",
+      "answer": "The CIA triad names the three core security properties. Confidentiality keeps information accessible only to authorized parties, supported by encryption and access controls. Integrity ensures data is accurate and unaltered except by authorized changes, supported by cryptographic hashing, digital signatures, and checksums. Availability ensures systems and data are usable when needed, supported by redundancy, backups, and DDoS protection. Good security balances all three, since they can conflict: heavy encryption or strict access can hurt availability, and aggressive availability measures can widen the attack surface. Framing a control by which property it serves helps reason about trade-offs and gaps."
+    },
+    {
+      "id": "general-002",
+      "topic": "general",
+      "difficulty": "medium",
+      "question": "What is defense in depth, and why is it more robust than relying on a single strong control?",
+      "answer": "Defense in depth layers multiple, independent controls so that the failure or bypass of any one does not lead directly to compromise. Layers span people, process, and technology: network segmentation, host hardening, least privilege, MFA, logging and monitoring, and tested incident response. It is more robust than a single strong control because every control eventually fails, whether through a zero-day, a misconfiguration, or a human mistake, and an attacker only needs one path. Independent layers force an adversary to defeat several controls in sequence, increasing their cost and the defender's chances of detection. The goal is resilience: assume breach and ensure no single failure is catastrophic."
+    },
+    {
+      "id": "general-003",
+      "topic": "general",
+      "difficulty": "medium",
+      "question": "What does a zero-trust architecture mean in practice, and how does it differ from a traditional perimeter model?",
+      "answer": "The traditional perimeter model trusts anything inside the corporate network and focuses defenses at the boundary, so once an attacker is inside they move laterally with little resistance. Zero trust drops the assumption that network location implies trust: every request to a resource is authenticated, authorized, and continuously evaluated regardless of where it originates. In practice this means strong identity for users and devices, least-privilege access enforced per resource, device posture and health checks, micro-segmentation, and rich logging for continuous verification. Access decisions consider context such as user, device, and behavior, and are re-evaluated rather than granted once. The shift is from 'trust but verify at the edge' to 'never trust, always verify, everywhere.'"
+    }
+  ]
+}

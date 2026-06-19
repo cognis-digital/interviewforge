@@ -1,0 +1,37 @@
+{
+  "name": "@cognis-digital/interviewforge",
+  "version": "0.1.0",
+  "description": "Security-interview question bank with an SM-2 spaced-repetition trainer. Authored, original content.",
+  "type": "module",
+  "bin": {
+    "interviewforge": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "data",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test \"dist/test/*.test.js\"",
+    "start": "node dist/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "security",
+    "interview",
+    "spaced-repetition",
+    "sm-2",
+    "flashcards",
+    "cli",
+    "study"
+  ],
+  "author": "Cognis Digital",
+  "license": "SEE LICENSE IN README (COCL 1.0)",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}
