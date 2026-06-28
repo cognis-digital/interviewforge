@@ -11,6 +11,36 @@ Everything is original, clean-room content. Educational use.
 - **Maintainer:** Cognis Digital
 - **License:** COCL 1.0
 
+
+<!-- cognis:example:start -->
+## 🔎 Example output
+
+**Sample result format** _(illustrative values — run on your own data for real findings):_
+
+```
+{
+  "id": "12345",
+  "candidate": {
+    "name": "John Doe",
+    "email": "john.doe@example.com"
+  },
+  "interviews": [
+    {
+      "date": "2022-01-15T14:00:00Z",
+      "status": "scheduled",
+      "notes": "Please bring a copy of your resume."
+    },
+    {
+      "date": "2022-01-17T10:30:00Z",
+      "status": "completed",
+      "notes": "The candidate did well, but had some trouble with the math questions."
+    }
+  ]
+}
+```
+
+<!-- cognis:example:end -->
+
 ## Why
 
 Studying for a security interview by re-reading the same list does not stick.
